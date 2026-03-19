@@ -66,7 +66,7 @@ export const tools = [
     name: 'get_layer_features',
     description: `Get features from a specific data layer within a bounding box. Use this tool when you need data from one specific source (e.g., just flood zones, or just wetlands) rather than all sources at once. Layer names include: fema-flood-zones, nwi-wetlands, usda-soils, usgs-geology, epa-superfund, epa-brownfields, epa-tri, usfws-critical-habitat, dot-bridges, power-plants, dams, mines, and more.`,
     parameters: {
-      layerName: z.string().describe('The layer identifier (e.g., "fema-flood-zones", "nwi-wetlands", "usda-soils")'),
+      layerName: z.string().describe('The layer identifier (e.g., "flood_zones", "wetlands", "dem_elevation", "nlcd_land_cover", "contours", "building_footprints", "stream_gauges", "tide_stations", "weather_alerts", "air_quality")'),
       bbox: z.string().describe('Bounding box as "west,south,east,north" in WGS84 coordinates')
     },
     endpoint: '/layers/{layerName}/features',
@@ -105,7 +105,7 @@ export const tools = [
     parameters: {
       latitude: z.number().describe('Latitude (WGS84)'),
       longitude: z.number().describe('Longitude (WGS84)'),
-      returnPeriod: z.number().describe('Return period in years (e.g., 2, 5, 10, 25, 50, 100)'),
+      returnPeriod: z.string().describe('Return period as string with "yr" suffix (e.g., "2yr", "5yr", "10yr", "25yr", "50yr", "100yr", "200yr", "500yr", "1000yr")'),
       duration: z.number().describe('Storm duration in hours (e.g., 1, 2, 6, 12, 24)'),
       timeInterval: z.number().describe('Time step in minutes (e.g., 5, 10, 15, 30, 60)'),
       distribution: z.string().describe('Rainfall distribution type (e.g., "SCS Type II", "SCS Type III", "Huff First Quartile")'),
@@ -130,9 +130,9 @@ export const tools = [
     parameters: {
       latitude: z.number().describe('Latitude (WGS84)'),
       longitude: z.number().describe('Longitude (WGS84)'),
-      returnPeriod: z.number().describe('Return period in years'),
+      returnPeriod: z.string().describe('Return period as string with "yr" suffix (e.g., "100yr")'),
       duration: z.number().describe('Storm duration in hours'),
-      horizon: z.string().describe('Future time horizon (e.g., "2050", "2080")'),
+      horizon: z.string().describe('Future time horizon: "current", "mid-century", or "late-century"'),
       scenario: z.string().describe('Climate scenario (e.g., "SSP2-4.5", "SSP5-8.5")'),
       units: z.enum(['english', 'metric']).optional().describe('Unit system (default: english)')
     },
