@@ -18,8 +18,18 @@ export const tools = [
   // SPATIAL QUERIES — Query environmental data by geography
   // ═══════════════════════════════════════════════════════════════════
   {
+    name: 'query_address',
+    description: `The recommended starting tool for most queries. Geocodes a US address AND queries environmental data at that location in a single call. Returns flood zones, wetlands, soils, critical habitat, contamination sites, and more — with plain-English interpretations (e.g., "High-risk flood zone. Flood insurance required."). No geometry in response — just properties and interpretations. Response is always small (<5KB). Use this FIRST when the user provides an address. Only use geocode_address separately if you need coordinates for other tools.`,
+    parameters: {
+      address: z.string().describe('US street address (e.g., "123 Main St, Houston TX")'),
+      layers: z.string().optional().describe('Comma-separated layer names. Defaults to: flood_zones, wetlands, soil_map_units, critical_habitat, protected_lands, brownfields, superfund, npdes_outfalls, sole_source_aquifers')
+    },
+    endpoint: '/query-address',
+    method: 'GET'
+  },
+  {
     name: 'identify_features_at_point',
-    description: `Identify what environmental features exist at an exact point. Returns ONLY the properties (no geometry coordinates) of features that contain or intersect the point. This is the fastest, most token-efficient way to answer "what flood zone is this address in?", "what soil type is here?", or "are there wetlands at this location?". ALWAYS prefer this tool over get_environmental_data_near_point when the user asks about a specific location rather than an area. Returns results from key regulatory layers: flood zones, wetlands, soils, critical habitat, protected lands, brownfields, Superfund, NPDES outfalls, and sole source aquifers.`,
+    description: `Identify what environmental features exist at an exact lat/lng point. Returns ONLY properties (no geometry) with plain-English interpretations. Response is always small (<5KB). Use this when you already have coordinates. For addresses, use query_address instead (it geocodes + queries in one call). Returns flood zones, wetlands, soils, critical habitat, protected lands, brownfields, Superfund, NPDES outfalls, and sole source aquifers by default.`,
     parameters: {
       lat: z.number().describe('Latitude (WGS84)'),
       lng: z.number().describe('Longitude (WGS84)'),
@@ -30,7 +40,7 @@ export const tools = [
   },
   {
     name: 'get_environmental_data_for_area',
-    description: `Query all available US federal environmental and infrastructure data within a geographic area (polygon). Returns features from 28+ data sources including FEMA flood zones, NWI wetlands, USDA soils, USGS geology, EPA sites (Superfund, brownfields, TRI), USFWS critical habitat, DOT bridges, power plants, dams, mines, and more. Use this tool when someone asks about environmental conditions, site constraints, development feasibility, or regulatory concerns for a specific area. Accepts a GeoJSON polygon (e.g., a property boundary, project site, or any area of interest). This is the most comprehensive tool — it returns everything available for the given area.`,
+    description: `Query all available US federal environmental and infrastructure data within a geographic area (polygon). Returns features from 28+ data sources. WARNING: responses can be very large (100KB-2MB+) in urban areas with full geometry. ALWAYS set geometry="none" unless the user specifically needs coordinates. Specify layers to reduce response size. For simple "what's at this location?" questions, use query_address or identify_features_at_point instead — they're faster and return <5KB.`,
     parameters: {
       polygon: z.object({
         type: z.literal('Polygon'),
@@ -44,7 +54,7 @@ export const tools = [
   },
   {
     name: 'get_environmental_data_near_point',
-    description: `Query all available US federal environmental and infrastructure data near a specific point (latitude/longitude). Returns features within a given radius from 28+ data sources including FEMA flood zones, NWI wetlands, USDA soils, USGS geology, EPA sites, endangered species habitat, bridges, dams, and more. Use this tool when someone asks "what's near this location?" or provides an address/coordinates and wants to know about environmental conditions in the vicinity. Great for quick site screening. For "what flood zone is THIS point in?" use identify_features_at_point instead — it's faster and returns much smaller responses.`,
+    description: `Query environmental data near a lat/lng point within a radius. WARNING: responses can be very large (50KB-1MB+) with default settings. ALWAYS set geometry="none" and specify layers to keep responses manageable. For "what's AT this exact location?" use identify_features_at_point or query_address instead — they return <5KB. Only use this tool when the user specifically needs data within a radius (e.g., "what EPA sites are within 2 miles?").`,
     parameters: {
       lat: z.number().describe('Latitude of the center point (WGS84)'),
       lng: z.number().describe('Longitude of the center point (WGS84)'),
@@ -70,7 +80,7 @@ export const tools = [
   },
   {
     name: 'get_environmental_data_in_bbox',
-    description: `Query environmental data within a bounding box. Simpler than polygon query — just provide west, south, east, north coordinates. Returns features from specified layers. Good for quick rectangular area searches when you don't have an exact polygon boundary.`,
+    description: `Query environmental data within a bounding box. WARNING: responses can be very large with full geometry. Set geometry="none" and specify layers to keep responses small. For point lookups, use identify_features_at_point instead.`,
     parameters: {
       bbox: z.string().describe('Bounding box as "west,south,east,north" in WGS84 coordinates'),
       layers: z.string().optional().describe('Comma-separated layer names to query'),

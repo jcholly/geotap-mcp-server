@@ -63,6 +63,7 @@ const MULTI_SOURCE = [
  */
 export const toolSources = {
   // ── Spatial Queries ──
+  query_address: MULTI_SOURCE,
   identify_features_at_point: MULTI_SOURCE,
   get_environmental_data_for_area: MULTI_SOURCE,
   get_environmental_data_near_point: MULTI_SOURCE,
