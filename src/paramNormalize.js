@@ -112,7 +112,66 @@ export function normalizeParams(toolName, params) {
     p.geometry = 'none';
   }
 
-  // ── 3. Strip undefined/null optional params ──────────────────────
+  // ── 3. Ungaged estimation: map `parameters` → `basinCharacteristics` ──
+  // The MCP tool accepts friendly names (drainageArea, meanBasinSlope)
+  // but the backend NSS API expects USGS codes (DRNAREA, BSLDEM)
+  if (toolName === 'estimate_ungaged_flood_frequency' ||
+      toolName === 'estimate_all_ungaged_statistics') {
+    const paramObj = p.parameters || p.characteristics || {};
+    if (Object.keys(paramObj).length > 0) {
+      // Map friendly names → USGS NSS parameter codes
+      const PARAM_MAP = {
+        drainageArea: 'DRNAREA',
+        contributingDrainageArea: 'CONTDA',
+        meanAnnualPrecipitation: 'PRECIP',
+        meanBasinSlope: 'BSLDEM',
+        percentForest: 'FOREST',
+        percentStorage: 'STORAGE',
+        percentImpervious: 'IMPERV',
+        meanBasinElevation: 'ELEV',
+        basinLength: 'BSHAPE',
+        annualRunoff: 'RUNOFF',
+      };
+
+      const basinChars = {};
+      for (const [key, value] of Object.entries(paramObj)) {
+        // Use mapped name if available, otherwise pass through as-is
+        // (allows users to send DRNAREA directly too)
+        const mappedKey = PARAM_MAP[key] || key;
+        basinChars[mappedKey] = Number(value);
+      }
+
+      p.basinCharacteristics = basinChars;
+      delete p.parameters;
+      delete p.characteristics;
+    }
+  }
+
+  // Also map for find_similar tools
+  if (toolName === 'find_similar_watersheds' ||
+      toolName === 'find_similar_watersheds_with_stats') {
+    const charObj = p.characteristics || p.parameters || {};
+    if (Object.keys(charObj).length > 0) {
+      const PARAM_MAP = {
+        drainageArea: 'DRNAREA',
+        contributingDrainageArea: 'CONTDA',
+        meanAnnualPrecipitation: 'PRECIP',
+        meanBasinSlope: 'BSLDEM',
+        percentForest: 'FOREST',
+      };
+
+      const mapped = {};
+      for (const [key, value] of Object.entries(charObj)) {
+        const mappedKey = PARAM_MAP[key] || key;
+        mapped[mappedKey] = Number(value);
+      }
+      p.basinCharacteristics = mapped;
+      delete p.characteristics;
+      delete p.parameters;
+    }
+  }
+
+  // ── 4. Strip undefined/null optional params ──────────────────────
   for (const [key, value] of Object.entries(p)) {
     if (value === undefined || value === null) {
       delete p[key];

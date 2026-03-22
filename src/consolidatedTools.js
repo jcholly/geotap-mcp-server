@@ -26,7 +26,7 @@ Actions:
 - "polygon" — Query features in a polygon area. Set geometry="none" and specify layers.
 - "summary" — Quick feature counts for an area (no geometry, just numbers). Fastest option for "how many?" questions.
 - "geocode" — Convert address/place name to coordinates. Use only when you need coordinates for other tools.
-- "list_layers" — List all 71 available data layers.
+- "list_layers" — List available data layers.
 - "layer_details" — Get metadata about a specific layer.
 - "layer_features" — Get features from one specific layer in a bbox.`,
     parameters: {
@@ -76,7 +76,7 @@ Actions:
 - "hyetograph" — Generate a design storm hyetograph (rainfall over time) for hydrologic modeling.
 - "export_hyetograph" — Export hyetograph as CSV/JSON for HEC-HMS, SWMM, etc.
 - "distributions" — List available rainfall distribution types (SCS Type I/IA/II/III, Huff, etc.).
-- "recommend_distribution" — Determine which distribution type applies at a location.
+- "recommend_distribution" — Determine which distribution type applies at a location. Note: this uses coastal/inland boundaries. For SCS design storms, prefer get_hydrology(action=distribution_for_location) which uses NRCS regional mapping.
 - "climate_scenarios" — List available SSP scenarios and time horizons.
 - "climate_factors" — Get climate change adjustment multipliers for a location.
 - "climate_projection" — Apply climate change projections to Atlas 14 data.
@@ -396,7 +396,7 @@ Actions:
   // ═══════════════════════════════════════════════════════════════════
   {
     name: 'export_data',
-    description: `Export environmental data layers to GIS formats (GeoJSON, Shapefile, KML, CSV, GeoPackage).
+    description: `Export environmental data layers to GIS formats (GeoJSON, Shapefile, CSV).
 
 Actions:
 - "export" — Export layers to a file format. Supports CRS transformation and clipping.
@@ -406,7 +406,7 @@ Actions:
       action: z.enum(['export', 'options', 'status'])
         .describe('Which export operation'),
       layers: z.array(z.string()).optional().describe('Layer names to export'),
-      format: z.enum(['geojson', 'shapefile', 'kml', 'csv', 'geopackage']).optional().describe('Output format'),
+      format: z.enum(['geojson', 'shapefile', 'csv']).optional().describe('Output format'),
       crs: z.string().optional().describe('Target CRS (e.g., "EPSG:4326")'),
       geometry: z.any().optional().describe('GeoJSON geometry to clip export area'),
       options: z.any().optional().describe('Additional options: {dem, satellite, nlcd, contours}'),
@@ -555,10 +555,10 @@ Actions:
 - "fire_stations" — Fire stations: type, status.
 - "schools" — Public schools: enrollment, grade levels, teacher count.
 - "power_plants" — Power plants: fuel type, installed capacity (MW).
-- "airports" — FAA airports: facility type, ownership, operations counts.
+- "airports" — FAA airports: name, FAA code, city, state.
 - "railroad_crossings" — FRA highway-rail crossings: warning devices, trains/day, crash data.
 - "bridges" — DOT bridges: condition ratings (0-9), sufficiency rating (0-100), year built.
-- "historic_places" — National Register of Historic Places: significance, category, period.`,
+- "historic_places" — National Register of Historic Places: name, NRIS reference number.`,
     parameters: {
       action: z.enum(['hospitals', 'fire_stations', 'schools', 'power_plants', 'airports', 'railroad_crossings', 'bridges', 'historic_places'])
         .describe('Which infrastructure data to query'),

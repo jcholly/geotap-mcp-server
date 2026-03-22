@@ -7,6 +7,20 @@
  */
 
 import { tools } from './tools.js';
+import { consolidatedTools } from './consolidatedTools.js';
+
+/**
+ * Build reverse mapping: legacy tool name → consolidated "tool(action=X)" format.
+ * Used to translate discover_tools results when running in consolidated mode.
+ */
+const legacyToConsolidated = {};
+for (const ctool of consolidatedTools) {
+  for (const [action, legacyName] of Object.entries(ctool._actionMap)) {
+    legacyToConsolidated[legacyName] = { tool: ctool.name, action };
+  }
+}
+
+const useLegacyTools = process.env.GEOTAP_LEGACY_TOOLS === 'true';
 
 /**
  * Tool categories with keywords for matching.
@@ -156,8 +170,14 @@ export function discoverTools(question, maxResults = 5) {
       }
     }
 
+    // In consolidated mode, translate legacy name to consolidated tool+action format
+    const consolidated = !useLegacyTools ? legacyToConsolidated[tool.name] : null;
+    const displayName = consolidated
+      ? `${consolidated.tool}(action="${consolidated.action}")`
+      : tool.name;
+
     return {
-      name: tool.name,
+      name: displayName,
       description: tool.description.split('.')[0] + '.', // First sentence only
       method: tool.method,
       parameters: params,
@@ -183,7 +203,9 @@ export function discoverTools(question, maxResults = 5) {
     allCategories: Object.keys(TOOL_CATEGORIES),
     hint: results.length > 0
       ? `Start with "${results[0].name}" — it's the best match for your question.`
-      : 'No strong matches found. Try query_address for location-based questions, or list_data_layers to see available data.',
+      : useLegacyTools
+        ? 'No strong matches found. Try query_address for location-based questions, or list_data_layers to see available data.'
+        : 'No strong matches found. Try query_location(action="address") for location-based questions, or query_location(action="list_layers") to see available data.',
     totalToolsAvailable: tools.length
   };
 }
