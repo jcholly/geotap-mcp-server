@@ -7,21 +7,35 @@
  */
 
 const MAX_FEATURES = 50;
-const MAX_RESPONSE_CHARS = 100_000; // ~25K tokens
+const MAX_RESPONSE_CHARS = 40_000; // ~10K tokens — keeps responses within LLM context budget
 
 /**
  * Tools that return feature collections and can be very large.
  * These get smart feature capping with layer summaries.
  */
 const FEATURE_HEAVY_TOOLS = new Set([
+  // Spatial queries
   'get_environmental_data_for_area',
   'get_environmental_data_near_point',
   'get_environmental_data_in_bbox',
   'get_layer_features',
+  'query_address',
+  'identify_features_at_point',
+  // Hydro/watershed
   'get_flowlines',
-  'find_water_features',
   'get_huc_watersheds',
+  'get_watershed_water_quality',
+  'delineate_watershed',
+  // Stations & water features
+  'find_water_features',
   'find_monitoring_stations',
+  'search_stations',
+  // Gage intelligence
+  'get_storm_events',
+  'find_similar_watersheds',
+  'find_similar_watersheds_with_stats',
+  // Water quality
+  'get_water_quality',
 ]);
 
 /**
