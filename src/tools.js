@@ -956,6 +956,251 @@ export const tools = [
   },
 
   // ═══════════════════════════════════════════════════════════════════
+  // HAZARDS & RISK — Natural hazards, risk indices, vulnerability
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    name: 'get_earthquake_data',
+    description: `Get recent earthquake data from USGS near a location. Returns magnitude, depth, location, and time.`,
+    parameters: {
+      lat: z.number().describe('Latitude WGS84'),
+      lng: z.number().describe('Longitude WGS84'),
+      bbox: z.string().optional().describe('Bounding box "west,south,east,north"'),
+    },
+    endpoint: '/layers/stream_gauges/features',
+    method: 'GET',
+    _adapterDirect: 'usgs.getEarthquakes'
+  },
+  {
+    name: 'get_nri_risk',
+    description: `Get FEMA National Risk Index data for a county — overall risk score, expected annual loss, social vulnerability, and community resilience. Covers 18 natural hazard types including earthquakes, hurricanes, tornadoes, flooding, and wildfire.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/nri_risk/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_social_vulnerability',
+    description: `Get CDC Social Vulnerability Index (SVI) data for census tracts — socioeconomic status, household composition, minority status, housing type. Overall SVI rank 0-1 (1 = most vulnerable).`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/social_vulnerability/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_seismic_design_values',
+    description: `Get USGS seismic design values (ASCE 7-22) for a building site — spectral acceleration, peak ground acceleration, site class adjustments. Essential for structural engineering.`,
+    parameters: {
+      lat: z.number().describe('Latitude WGS84'),
+      lng: z.number().describe('Longitude WGS84'),
+    },
+    endpoint: '/layers/seismic_design/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_wildfire_perimeters',
+    description: `Get current and recent wildfire perimeters from NIFC — fire name, acres burned, containment percentage.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/wildfire_perimeters/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_landslide_data',
+    description: `Get USGS landslide inventory data — historical landslide locations, types, movement class, and damage reports.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/landslides/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_nfip_claims',
+    description: `Get FEMA NFIP flood insurance claims for a county — dates of loss, amounts paid, flood zones, occupancy types.`,
+    parameters: {
+      countyFips: z.string().describe('5-digit county FIPS code (e.g., "13051" for Chatham County GA)'),
+    },
+    endpoint: '/layers/nfip_claims/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_coastal_vulnerability',
+    description: `Get USGS Coastal Vulnerability Index — geomorphology, coastal slope, relative sea level rise, mean tide range, mean wave height, erosion rate.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/coastal_vulnerability/features',
+    method: 'GET'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // ENERGY — Solar, wind, utility rates, EV charging, electricity
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    name: 'get_solar_resource',
+    description: `Get NREL solar resource data for a location — direct normal irradiance (DNI), global horizontal irradiance (GHI), latitude tilt irradiance. Monthly and annual averages.`,
+    parameters: {
+      lat: z.number().describe('Latitude WGS84'),
+      lng: z.number().describe('Longitude WGS84'),
+    },
+    endpoint: '/layers/solar_resource/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_solar_estimate',
+    description: `Get NREL PVWatts solar energy production estimate — annual/monthly AC energy output, capacity factor, solar radiation. Configurable system parameters.`,
+    parameters: {
+      lat: z.number().describe('Latitude WGS84'),
+      lng: z.number().describe('Longitude WGS84'),
+      system_capacity: z.number().optional().describe('System size in kW (default: 4)'),
+      tilt: z.number().optional().describe('Panel tilt angle in degrees (default: 20)'),
+      azimuth: z.number().optional().describe('Panel azimuth in degrees, 180=south (default: 180)'),
+    },
+    endpoint: '/layers/pvwatts/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_utility_rates',
+    description: `Get NREL utility rate data for a location — utility company name, residential/commercial/industrial electricity rates ($/kWh).`,
+    parameters: {
+      lat: z.number().describe('Latitude WGS84'),
+      lng: z.number().describe('Longitude WGS84'),
+    },
+    endpoint: '/layers/utility_rates/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_alt_fuel_stations',
+    description: `Get DOE alternative fuel stations near a location — EV chargers, CNG, LPG, hydrogen, biodiesel. Includes network, connector types, and access info.`,
+    parameters: {
+      lat: z.number().describe('Latitude WGS84'),
+      lng: z.number().describe('Longitude WGS84'),
+      radius: z.number().optional().describe('Search radius in miles (default: 25)'),
+    },
+    endpoint: '/layers/alt_fuel_stations/features',
+    method: 'GET'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // INFRASTRUCTURE — HIFLD hospitals, fire stations, schools, etc.
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    name: 'get_hospitals',
+    description: `Get hospitals near a location from HIFLD — name, address, beds, trauma level, helipad, ownership type.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/hospitals/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_fire_stations',
+    description: `Get fire stations from HIFLD — name, address, type, status.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/fire_stations/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_schools',
+    description: `Get public schools from HIFLD — name, enrollment, grade levels, teacher count.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/schools/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_power_plants',
+    description: `Get power plants from HIFLD — name, fuel type, installed capacity (MW), technology type.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/power_plants/features',
+    method: 'GET'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // ECOLOGY — Species, fish habitat, cropland
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    name: 'get_species_occurrences',
+    description: `Get species occurrence records from GBIF (replaced USGS BISON) — scientific name, kingdom, family, observation date, basis of record.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      limit: z.number().optional().describe('Max records (default: 300)'),
+    },
+    endpoint: '/layers/species_occurrences/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_fish_habitat',
+    description: `Get NOAA Essential Fish Habitat data — species, habitat type, life stage, fishery management council.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/fish_habitat/features',
+    method: 'GET'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // TRANSPORTATION — Airports, railroads, bridges
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    name: 'get_airports',
+    description: `Get FAA airports and aviation facilities from NTAD — facility name, type, ownership, operations counts, elevation.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/airports/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_railroad_crossings',
+    description: `Get FRA highway-rail grade crossings — railroad company, warning devices, trains per day, crash/fatality/injury data.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/railroad_crossings/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_bridges',
+    description: `Get DOT National Bridge Inventory data from NTAD — year built, condition ratings (0-9 scale), sufficiency rating (0-100), average daily traffic, structural details.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/bridges/features',
+    method: 'GET'
+  },
+  {
+    name: 'get_historic_places',
+    description: `Get National Register of Historic Places listings from NPS — name, significance level, certification date, category, period of significance.`,
+    parameters: {
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)')
+    },
+    endpoint: '/layers/historic_places/features',
+    method: 'GET'
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
   // HEALTH, STATUS & API INFO
   // ═══════════════════════════════════════════════════════════════════
   {

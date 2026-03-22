@@ -79,6 +79,22 @@ const TOOL_CATEGORIES = {
   'API Status': {
     keywords: ['status', 'health', 'api', 'available', 'working', 'service', 'down', 'outage'],
     tools: ['check_api_status', 'check_specific_api_status', 'check_rainfall_service_status']
+  },
+  'Hazards & Risk': {
+    keywords: ['hazard', 'risk', 'earthquake', 'seismic', 'wildfire', 'fire', 'landslide', 'coastal vulnerability', 'nri', 'risk index', 'vulnerability', 'svi', 'social vulnerability', 'nfip', 'flood claims', 'flood insurance claims'],
+    tools: ['get_nri_risk', 'get_seismic_design_values', 'get_wildfire_perimeters', 'get_landslide_data', 'get_coastal_vulnerability', 'get_nfip_claims', 'get_social_vulnerability']
+  },
+  'Energy & Solar': {
+    keywords: ['solar', 'energy', 'pvwatts', 'utility rate', 'electricity', 'ev charger', 'charging station', 'alternative fuel', 'renewable', 'irradiance', 'photovoltaic'],
+    tools: ['get_solar_resource', 'get_solar_estimate', 'get_utility_rates', 'get_alt_fuel_stations']
+  },
+  'Infrastructure': {
+    keywords: ['hospital', 'fire station', 'school', 'police', 'law enforcement', 'power plant', 'ems', 'ambulance', 'airport', 'railroad', 'bridge', 'historic', 'national register'],
+    tools: ['get_hospitals', 'get_fire_stations', 'get_schools', 'get_power_plants', 'get_airports', 'get_railroad_crossings', 'get_bridges', 'get_historic_places']
+  },
+  'Ecology & Biodiversity': {
+    keywords: ['species', 'biodiversity', 'bird', 'fish', 'essential fish habitat', 'occurrence', 'gbif', 'bison', 'marine', 'efh'],
+    tools: ['get_species_occurrences', 'get_fish_habitat']
   }
 };
 

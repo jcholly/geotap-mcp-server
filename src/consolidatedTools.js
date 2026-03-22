@@ -26,7 +26,7 @@ Actions:
 - "polygon" — Query features in a polygon area. Set geometry="none" and specify layers.
 - "summary" — Quick feature counts for an area (no geometry, just numbers). Fastest option for "how many?" questions.
 - "geocode" — Convert address/place name to coordinates. Use only when you need coordinates for other tools.
-- "list_layers" — List all 37 available data layers.
+- "list_layers" — List all 71 available data layers.
 - "layer_details" — Get metadata about a specific layer.
 - "layer_features" — Get features from one specific layer in a bbox.`,
     parameters: {
@@ -475,6 +475,128 @@ Actions:
     _actionMap: {
       all: 'check_api_status',
       specific: 'check_specific_api_status',
+    }
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 13. GET HAZARDS — Natural hazards, risk, and vulnerability data
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    name: 'get_hazards',
+    description: `Query natural hazard and risk data for a location — FEMA risk index, seismic design, wildfires, landslides, coastal vulnerability, flood insurance claims, and social vulnerability.
+
+Actions:
+- "nri" — FEMA National Risk Index: overall risk score, expected annual loss, 18 hazard types (earthquake, hurricane, tornado, flooding, wildfire, etc.) at the county level.
+- "seismic_design" — USGS seismic design values (ASCE 7-22): spectral acceleration, peak ground acceleration, site class. Required for structural engineering.
+- "wildfires" — Current and recent wildfire perimeters from NIFC: fire name, acres burned, containment percentage.
+- "landslides" — USGS landslide inventory: historical landslide locations, types, damage reports.
+- "coastal" — USGS Coastal Vulnerability Index: geomorphology, coastal slope, sea level rise, tide range, wave height, erosion rate.
+- "nfip_claims" — FEMA NFIP flood insurance claims by county: dates of loss, amounts paid, flood zones.
+- "social_vulnerability" — CDC Social Vulnerability Index: socioeconomic status, household composition, minority status, housing type (0-1 scale, tract level).`,
+    parameters: {
+      action: z.enum(['nri', 'seismic_design', 'wildfires', 'landslides', 'coastal', 'nfip_claims', 'social_vulnerability'])
+        .describe('Which hazard/risk data to query'),
+      lat: z.number().optional().describe('Latitude WGS84 (for seismic_design)'),
+      lng: z.number().optional().describe('Longitude WGS84 (for seismic_design)'),
+      bbox: z.string().optional().describe('Bounding box "west,south,east,north" (for nri, wildfires, landslides, coastal, social_vulnerability)'),
+      countyFips: z.string().optional().describe('5-digit county FIPS code (for nfip_claims)'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)'),
+    },
+    _actionMap: {
+      nri: 'get_nri_risk',
+      seismic_design: 'get_seismic_design_values',
+      wildfires: 'get_wildfire_perimeters',
+      landslides: 'get_landslide_data',
+      coastal: 'get_coastal_vulnerability',
+      nfip_claims: 'get_nfip_claims',
+      social_vulnerability: 'get_social_vulnerability',
+    }
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 14. GET ENERGY — Solar, utility rates, EV charging, electricity
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    name: 'get_energy',
+    description: `Query energy data for a location — solar resource, solar production estimates, utility rates, EV charging stations.
+
+Actions:
+- "solar" — NREL solar resource data: direct normal irradiance (DNI), global horizontal irradiance (GHI), latitude tilt irradiance. Monthly and annual.
+- "pvwatts" — NREL PVWatts solar energy production estimate: annual kWh output, capacity factor. Configurable system size and panel orientation.
+- "utility_rates" — NREL utility rate data: utility company name, residential/commercial/industrial rates ($/kWh).
+- "alt_fuel" — DOE alternative fuel stations: EV chargers, CNG, hydrogen, etc. Includes network, connector types, and availability.`,
+    parameters: {
+      action: z.enum(['solar', 'pvwatts', 'utility_rates', 'alt_fuel'])
+        .describe('Which energy data to query'),
+      lat: z.number().optional().describe('Latitude WGS84'),
+      lng: z.number().optional().describe('Longitude WGS84'),
+      system_capacity: z.number().optional().describe('Solar system size in kW for pvwatts (default: 4)'),
+      tilt: z.number().optional().describe('Panel tilt angle for pvwatts (default: 20)'),
+      azimuth: z.number().optional().describe('Panel azimuth for pvwatts, 180=south (default: 180)'),
+      radius: z.number().optional().describe('Search radius in miles for alt_fuel (default: 25)'),
+    },
+    _actionMap: {
+      solar: 'get_solar_resource',
+      pvwatts: 'get_solar_estimate',
+      utility_rates: 'get_utility_rates',
+      alt_fuel: 'get_alt_fuel_stations',
+    }
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 15. GET INFRASTRUCTURE — HIFLD critical infrastructure
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    name: 'get_infrastructure',
+    description: `Query critical infrastructure data from HIFLD and DOT — hospitals, fire stations, schools, law enforcement, power plants, EMS, airports, railroad crossings, bridges, and historic places.
+
+Actions:
+- "hospitals" — Hospitals: beds, trauma level, helipad, ownership type.
+- "fire_stations" — Fire stations: type, status.
+- "schools" — Public schools: enrollment, grade levels, teacher count.
+- "power_plants" — Power plants: fuel type, installed capacity (MW).
+- "airports" — FAA airports: facility type, ownership, operations counts.
+- "railroad_crossings" — FRA highway-rail crossings: warning devices, trains/day, crash data.
+- "bridges" — DOT bridges: condition ratings (0-9), sufficiency rating (0-100), year built.
+- "historic_places" — National Register of Historic Places: significance, category, period.`,
+    parameters: {
+      action: z.enum(['hospitals', 'fire_stations', 'schools', 'power_plants', 'airports', 'railroad_crossings', 'bridges', 'historic_places'])
+        .describe('Which infrastructure data to query'),
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)'),
+    },
+    _actionMap: {
+      hospitals: 'get_hospitals',
+      fire_stations: 'get_fire_stations',
+      schools: 'get_schools',
+      power_plants: 'get_power_plants',
+      airports: 'get_airports',
+      railroad_crossings: 'get_railroad_crossings',
+      bridges: 'get_bridges',
+      historic_places: 'get_historic_places',
+    }
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 16. GET ECOLOGY — Species, fish habitat, water quality stations
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    name: 'get_ecology',
+    description: `Query ecological and biodiversity data — species occurrences, essential fish habitat, water quality monitoring stations.
+
+Actions:
+- "species" — GBIF species occurrence records: scientific name, kingdom, family, observation date, IUCN status.
+- "fish_habitat" — NOAA Essential Fish Habitat: species, habitat type, life stage, fishery management council.`,
+    parameters: {
+      action: z.enum(['species', 'fish_habitat'])
+        .describe('Which ecology data to query'),
+      bbox: z.string().describe('Bounding box "west,south,east,north"'),
+      limit: z.number().optional().describe('Max records for species (default: 300)'),
+      geometry: z.enum(['none', 'simplified', 'full']).optional().describe('Geometry detail level (default: none)'),
+    },
+    _actionMap: {
+      species: 'get_species_occurrences',
+      fish_habitat: 'get_fish_habitat',
     }
   },
 ];
