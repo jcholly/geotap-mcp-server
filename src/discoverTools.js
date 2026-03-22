@@ -13,7 +13,7 @@ import { tools } from './tools.js';
  */
 const TOOL_CATEGORIES = {
   'Getting Started': {
-    keywords: ['start', 'begin', 'address', 'location', 'what is', 'tell me about', 'lookup', 'search address', 'find address'],
+    keywords: ['start', 'begin', 'address', 'location', 'what is', 'tell me about', 'lookup', 'search address', 'find address', 'hydric', 'soil type', 'what soil'],
     tools: ['query_address', 'identify_features_at_point', 'geocode_address']
   },
   'Flood & FEMA': {
@@ -25,20 +25,20 @@ const TOOL_CATEGORIES = {
     tools: ['get_rainfall_data', 'get_idf_curves', 'generate_hyetograph', 'get_rainfall_distribution', 'get_climate_change_rainfall_projection', 'get_rainfall_uncertainty_bounds', 'run_rainfall_sensitivity_analysis']
   },
   'Watershed & Hydrology': {
-    keywords: ['watershed', 'drainage', 'basin', 'delineate', 'hydrology', 'runoff', 'peak flow', 'streamstats', 'catchment', 'time of concentration'],
+    keywords: ['watershed', 'drainage', 'basin', 'delineate', 'runoff', 'streamstats', 'catchment', 'time of concentration', 'hydrology analysis', 'hydrologic analysis'],
     tools: ['delineate_watershed', 'get_watershed_characteristics', 'get_flow_statistics', 'analyze_hydrology', 'get_flowlines']
   },
-  'Curve Number & Soils': {
-    keywords: ['curve number', 'cn', 'soil', 'hsg', 'hydrologic soil', 'runoff', 'scs', 'nrcs', 'ssurgo', 'infiltration', 'pervious', 'impervious'],
-    tools: ['analyze_curve_numbers', 'lookup_curve_number', 'get_curve_number_tables']
+  'Curve Number': {
+    keywords: ['curve number', 'cn value', 'runoff coefficient', 'scs method', 'nrcs method', 'infiltration rate', 'pervious', 'impervious', 'peak flow', 'peak discharge', 'hydrology'],
+    tools: ['analyze_curve_numbers', 'lookup_curve_number', 'get_curve_number_tables', 'analyze_hydrology']
   },
   'Water Quality': {
-    keywords: ['water quality', 'impairment', 'impaired', 'pollution', 'pollutant', 'tmdl', '303d', 'attains', 'epa', 'clean water', 'npdes', 'discharge'],
+    keywords: ['water quality', 'impairment', 'impaired', 'pollution', 'pollutant', 'tmdl', '303d', 'attains', 'clean water act'],
     tools: ['get_water_quality', 'get_water_impairments', 'get_watershed_for_point', 'get_watershed_water_quality']
   },
   'Wetlands & Species': {
-    keywords: ['wetland', 'nwi', 'endangered', 'species', 'habitat', 'critical habitat', 'protected', 'conservation', 'wildlife'],
-    tools: ['query_address', 'identify_features_at_point', 'get_environmental_data_for_area']
+    keywords: ['wetland', 'wetlands near', 'nwi', 'endangered', 'species', 'habitat', 'critical habitat', 'protected', 'conservation', 'wildlife'],
+    tools: ['query_address', 'identify_features_at_point', 'get_environmental_data_for_area', 'get_environmental_data_near_point']
   },
   'Elevation & Terrain': {
     keywords: ['elevation', 'dem', 'terrain', 'contour', 'topography', 'slope', 'lidar', '3dep', 'relief', 'grading'],
@@ -61,12 +61,12 @@ const TOOL_CATEGORIES = {
     tools: ['generate_site_analysis', 'generate_constraints_report', 'generate_developability_report']
   },
   'Monitoring Stations': {
-    keywords: ['station', 'monitoring', 'weather station', 'tide', 'groundwater', 'well', 'camera', 'sensor'],
+    keywords: ['station', 'monitoring', 'weather station', 'tide', 'groundwater', 'well', 'camera', 'sensor', 'find gage', 'find gauge', 'find stream gage', 'find stream gauge', 'stream gauges near', 'stream gages near', 'gauges within', 'gages within', 'nearby gage', 'nearby gauge'],
     tools: ['find_monitoring_stations', 'search_stations', 'get_station_types']
   },
   'Data Export': {
-    keywords: ['export', 'download', 'shapefile', 'geojson', 'csv', 'kml', 'geopackage', 'geotiff', 'gis', 'cad'],
-    tools: ['export_data', 'get_export_options', 'export_dem', 'export_contours', 'export_land_use', 'export_satellite_imagery']
+    keywords: ['export', 'download', 'shapefile', 'geojson', 'csv', 'kml', 'geopackage', 'gis', 'cad', 'as a shapefile', 'as geojson', 'as csv', 'as kml', 'export as', 'download as', 'save as', 'export data'],
+    tools: ['export_data', 'get_export_options']
   },
   'Land Use & Imagery': {
     keywords: ['land use', 'land cover', 'nlcd', 'satellite', 'imagery', 'aerial', 'naip', 'impervious surface', 'developed', 'forest'],
